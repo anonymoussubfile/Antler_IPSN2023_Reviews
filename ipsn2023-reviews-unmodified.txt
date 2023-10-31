@@ -1,0 +1,285 @@
+IPSN 23 Paper #15 Reviews and Comments
+===========================================================================
+Paper #15 Antler: Exploiting Task Affinity for Efficient Multitask Learning
+on Low-Resource Systems
+
+
+Review #15A
+===========================================================================
+
+Overall merit
+-------------
+2. Weak reject
+
+Reviewer expertise
+------------------
+2. Some familiarity
+
+Is this paper exciting and thought-provoking?
+---------------------------------------------
+2. Low risk idea or predictable hypothesis (but quite well executed)
+
+Paper summary
+-------------
+The authors present Antler, an approach that calculates task affinity, generates compact task graphs, and optimizes the order of executing the tasks for multi-task learning in low-resource systems.
+
+Strengths
+---------
+S1. The authors consider the similarities and dependencies of tasks. Although a multi-task neural architecture with a shared block and separated blocks for downstream tasks is common, the optimization of architectures for lower energy consumption and higher accuracy is novel and interesting.
+
+S2. The authors prove that ordering tasks in multi-task learning is NP-complete and then provide a solution to it， which might provide some useful insights to other researchers in the community.
+
+S3. Analysis and discussion on both public datasets and real-world deployment are shown.
+
+S4. The paper is well-written.
+
+Weaknesses
+----------
+1. It is not clear why the authors get the representations as Step 1 in Task Affinity shows. Why do they use Pearson correlation coefficient in Step 1 and Spearman’s correlation coefficient in Step 2? Justifications are needed.
+
+2. The authors calculate task affinity with outputs of networks. It would be interesting to know if architectures of networks make difference.
+
+3. In figure 2, it is hard to understand why tasks with high variety share more blocks than tasks with low variety.
+
+4. Although Section 6 is based on public datasets, it is still necessary to show the tasks performed and the final task graphs as showed in 7.2 and 7.3
+
+5. The complexity of the genetic algorithm solver is unknown. How to ensure the solver will converge in low resource setting? There's no details on this.
+
+Involves human subject research
+-------------------------------
+2. Research involving human and animal subjects, and ethical
+   review/approval is mentioned in the paper
+
+
+
+Review #15B
+===========================================================================
+
+Overall merit
+-------------
+2. Weak reject
+
+Reviewer expertise
+------------------
+3. Knowledgeable
+
+Is this paper exciting and thought-provoking?
+---------------------------------------------
+2. Low risk idea or predictable hypothesis (but quite well executed)
+
+Paper summary
+-------------
+This paper presented Antler, a multitask inference framework that exploits the affinity between all pairs of tasks in a multitask inference system to construct a compact graph representation of the task set and finds an optimal order of execution of the tasks such that the end-to-end time and energy cost of inference is reduced while the accuracy remains similar to the state-of-the-art. To evaluate the performance of Antler, the authors conducted experiments on nine datasets across a set of neural network architectures and demonstrated the proposed Antler outperforms state of the art baselines.
+
+Strengths
+---------
++ The work focuses on a very important but challenging problem: multitask inference on embedded systems.
++ The affinity analysis of multiple tasks is quite interesting.
++ The implementation of system prototypes is impressive.
+
+Weaknesses
+----------
+- My primary concern is how the multitask learning is conducted. In multitask learning literature, different tasks usually share the chunk of the neural networks but will have different heads for different tasks. Such single multitask learning network is trained once using the labels of different tasks. According to Figure 1, I am not sure if the proposed Antler follows the multitask learning framework. If this is true, I am concerned about the training quality of the multitask model.
+- I am also concerned about how the multitask formulation was conducted in section 7.1 and 7.2. It seems to me that those tasks are not quite correlated/similar and it does not make too much sense to combine them under the multitask framework. This is because if the tasks are not correlated or similar, the combination of those tasks may hurt the accuracy for every single task.
+
+Involves human subject research
+-------------------------------
+1. Does not involve human and animal subjects
+
+
+
+Review #15C
+===========================================================================
+
+Overall merit
+-------------
+3. Weak accept
+
+Reviewer expertise
+------------------
+3. Knowledgeable
+
+Is this paper exciting and thought-provoking?
+---------------------------------------------
+2. Low risk idea or predictable hypothesis (but quite well executed)
+
+Paper summary
+-------------
+Antler proposes to efficiently design neural network architectures for multi-task learning on resource-constrained systems. The main idea is that many tasks have multiple common building blocks, which may be combined in order to reduce the resources required to perform inferences. Finding these overlapping subtasks, however, may be difficult. Antler measures the affinity between task graphs under different model budgets and then optimizes their execution order depending on the cost of switching between any two specific tasks. Individual tasks are moreover trained using multi-task learning on the same architecture, leveraging their similarities. Experiments with a variety of audio and image processing tasks indicate that Antler has consistently lower execution times and energy consumption, while maintaining comparable model accuracies, as baselines.
+
+Strengths
+---------
++ Antler exhibits good performance in practice. It’s especially impressive that the model accuracy remains similar to that of baselines, even though Antler uses multi-task learning with the same architecture for all tasks.
+
++ The idea of exploiting cross-task affinity is interesting. Antler discovers these affinities in a relatively automated way that exploits known methods for multi-task learning.
+
+Weaknesses
+----------
+- Antler assumes that all inference tasks are known a priori, but this may not be the case in practice. Is there an online version of Antler? How difficult is it to modify the designed networks if the set of relevant tasks changes?
+
+- The distinction between subtasks and task graphs is not very clear in the paper. I initially thought that Antler would explicitly take advantage of common processing subtasks and design their overlap, but it seems that Antler instead looks at similarities in the entire task graphs. Since the variety score is already being computed at various points in each task graph, would a finer-grained sharing of model information lead to further improvement?
+
+Involves human subject research
+-------------------------------
+1. Does not involve human and animal subjects
+
+My detailed comments for authors
+--------------------------------
+What is a “block” within a task network architecture? Is it a neuron in the neural network?
+
+How would a sample dataset be obtained to compute the variety metric? Wouldn’t this require knowing the distribution of the inference dataset? Or is it sufficient to simply know the range of possible data (I would think the full distribution would be needed, as one might care more about accuracy on more frequently occurring data points)?
+
+What is the complexity of the genetic algorithm solver that can be used to solve for the optimal task order? How close to the optimal are these solutions?
+
+Why choose the task score at which the variety score and execution cost intersect? Wouldn’t it be better to try to optimize the sum of the two, or perhaps to optimize one subject to a constraint on the other? It’s also not clear whether the variety score and execution cost are of the same units, which makes the choice of their intersection, even if normalized, especially puzzling.
+
+
+
+Review #15D
+===========================================================================
+
+Overall merit
+-------------
+3. Weak accept
+
+Reviewer expertise
+------------------
+2. Some familiarity
+
+Is this paper exciting and thought-provoking?
+---------------------------------------------
+3. Refreshing/daring idea or bold hypothesis (but execution has drawbacks)
+
+Paper summary
+-------------
+The paper proposes Antler, a frameworks that exploits affinity and variety between pairs of tasks to design an effective computational graph representation and task scheduling for multi-task inference. The paper explains the theory behind the proposed approach, evaluates it on a read hardware  and compares to the state-of-the-art approaches showing superior performance.
+
+Strengths
+---------
+* Well-motivated work and interesting idea how to generate an efficient task graph for multiple models. Comparison to the state-of-the-art on multiple datasets and architectures, and tests on a real hardware platform.
+
+Weaknesses
+----------
+* Justification of the proposed approach is somewhat lacking. Several claims are not well-supported through experiments / need further analysis and justification
+
+Involves human subject research
+-------------------------------
+1. Does not involve human and animal subjects
+
+My detailed comments for authors
+--------------------------------
+I enjoyed reading the paper, in particular the task graph generation part. The definitions of affinity and variety scores are sound, although could be better supported through experiments (Fig. 3 is not sufficient to understand the presented relationship for different datasets / architectures).
+
+The points below summarize the questions I have on the paper. 
+
+* When looking at Fig. 1(b), can the generated graph have merged branches? Please provide justification.
+
+* It would be helpful if the authors could compare their work to [18], which seems quite close to Antler.
+
+* "In Antler, all tasks have the same network architecture." -- Given different nature of tasks, it is completely unclear by how much this assumption limits the choice of the applications input to the Antler framework.
+
+* Sec. 3.1 argues that computing an affinity score can be expensive. However, this step is performed offline, before the models are deployed. How severe is the high computational cost of affinity in this case?
+
+"Task graphs with low variety scores are generally desired as variety score tends to inversely correlate with inference accuracy". Such statements need justification.
+
+
+
+Review #15E
+===========================================================================
+
+Overall merit
+-------------
+2. Weak reject
+
+Reviewer expertise
+------------------
+2. Some familiarity
+
+Is this paper exciting and thought-provoking?
+---------------------------------------------
+2. Low risk idea or predictable hypothesis (but quite well executed)
+
+Paper summary
+-------------
+This paper proposes Anlter, a system that leverages task affinity and ordering in multi-task settings to execute multiple tasks on embedded devices. Specifically, the system starts with a tasks set that manifests some sort of affinity and creates task graph, where different tasks fork at different depths of the same backbone, in a tree-like manner. The root of the tree is shared, leading to performance gains, while the forking point is selected balancing the gains and dissimilarity of tasks. Subsequently, an execution order between tasks is established, via a genetic algorithm, based on the switching costs and inter-task dependencies.
+
+Results from the evaluation over nine benchmark datasets show significantly better latency and energy behaviour compared to three existing baseline multi-task systems, while at the same time they system is also evaluated on realistic deployments across two different modalities (audio, vision).
+
+Strengths
+---------
+* The proposed method is simple to understand.
+* The evaluation of the system is quite well-executed over multiple tasks, spanning different modalities and compared with various multi-task baselines.
+* Antler is actually run on devices of different capabilities and also deployed on real-life tasks and shows actual gains overs the baselines with minimal accuracy degradation.
+
+Weaknesses
+----------
+* Presentation at times could be better, especially when presenting the algorithmic contributions.
+* The evaluation lacks error statistics and experimental setup could include additional details for reproducibility.
+* The overhead of the proposed solver and its generality and scalability have not been evaluated.
+
+Involves human subject research
+-------------------------------
+2. Research involving human and animal subjects, and ethical
+   review/approval is mentioned in the paper
+
+My detailed comments for authors
+--------------------------------
+## Technical issues
+
+* The authors seem to assume and end-to-end identical architecture between tasks, whereas in reality this may only manifest in part of the networks across tasks. As such, this simplification should be described as a current limitation.
+* Another assumption is also the equal weighting of all tasks, which might be undesirable in a realistic deployment, especially when tasks have dependencies. The same applies to step 1 of §3.1 where each task t uses K samples, instead of K_t.
+* The overhead of constructing the task graph and retraining is not particularly well-described in the text.
+* While the overhead may be manageable for networks of microcontroller scale, it may be intractable for larger use-cases. I believe this should be clearly laid out in a limitations section.
+* My understanding from the text is that the task graph generation and the execution ordering are all accomplished on the server-side.
+
+* In Figure 2, there is also the alternative of having different tasks as early-exits on the same backbone [a,b]
+* The experimental setup is missing:
+    * Information about the server hardware.
+    * How energy is measured.
+* Figure 7: What hardware is this measured on?
+* In the evaluation, energy and latency metrics are missing variance metrics across runs, as well as details about the number of runs.
+* §6.2, "Performance of genetic algorithm": This part could use a rewriting, as it is missing context and what it evaluates exactly in the case in point. Also, Table 3 is unclear what it measures in terms of its reported numbers.
+* In the real-world deployment of §7, have the test-data been on a previously unseen user or is the train/test partitioning done blindly to the users?
+
+[a] S. Laskaridis, A. Kouris, and N. D. Lane. 2021. Adaptive Inference through Early-Exit Networks: Design, Challenges and Directions. In Proceedings of the 5th International Workshop on Embedded and Mobile Deep Learning (EMDL'21). Association for Computing Machinery, New York, NY, USA, 1–6. https://doi.org/10.1145/3469116.3470012  
+[b] Teerapittayanon, S., McDanel, B., & Kung, H. T. (2016, December). Branchynet: Fast inference via early exiting from deep neural networks. In 2016 23rd International Conference on Pattern Recognition (ICPR) (pp. 2464-2469). IEEE.
+
+
+## Questions
+
+* Would Antler work if the sequence of tasks was presented in a sequential way, rather than all tasks at once? If so, how?
+* What would happen if the original tasks did not share the same DNN backend? Could Antler somehow marry different DNNs via distillation for example?
+* Could Antler work with pretrained models of different tasks and no access to the original training set? If so, how?
+* How does Antler interact with compression methods, such as quantisation? Could some tasks be quantised while others not and still have an functional system?
+* Is there a limit to the number of tasks Antler could handle?
+* It is somewhat unclear to me why the cost matrix C_{n \times n } is symmetric.
+* From the paper, I understand that there is a single multi-task model deployed across clients. Do the authors assume that the conditional constrains described in §4.3 are IID across clients? How would the authors model the case where different clients have different (and diverse) distributions of values that lead to varying execution rates of different tasks?
+
+
+## Presentation
+
+* The definition of what affinity is is quite central to the main point of the paper, and thus I would recommend to move the definition from §3.1 to the introduction maybe?
+* Steps in §3.1, §3.3 and §9.2 could be more succinctly presented in an algorithmic form
+* Having an Appendix as part of the main manuscript is a bit odd. Maybe the authors could incorporate the Appendix sections in the main narrative of their text.
+* §5.3, "Tensor Flow" --> "TensorFlow"
+* §5.3, "Third, All" --> "Third, all"
+* Figure 12 could be better presented if accuracy was wrt the baseline accuracy of "vanilla".
+* Figure 16 would be more legible if a smaller y-axis range was used.
+
+
+
+Comment @A1 by Reviewer E
+---------------------------------------------------------------------------
+The summary of the discussion during the PC meeting is the following:
+
+The paper has merit and we liked the approach of leveraging task affinity for bringing the cost of multi-DNN execution down by leveraging multi-task (MT) affinity, but the program committee felt that the current state of the manuscript was missing substantial details about the system and its limitations. 
+
+Specifically, it was agreed that:
+* The overhead of running the task graph generation and task ordering has not been quantified.
+* The scalability aspect of Antler, with respect to the size of the DNNs and the number of tasks to be solved and the number of potential fork points, was missing.
+* The test accuracy on the solved tasks was suspiciously high, as presented in Figure 12
+* The current state of the system only allowed tasks to have the same backbone, which can largely not be the case across MT scenarios.
+* Another limitation was that Antler requires access to training/validation data .
+* There was also the implicit assumption that all tasks are equal, static and that deployment targets have the same frequency/importance for these tasks. As such, there is a limitation on static and homogeneous MT environment.
+
+Nevertheless, it was recognised that Antler presents a promising approach and we would encourage the authors to continue pursuing this line of work.
